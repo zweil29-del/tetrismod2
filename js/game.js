@@ -128,7 +128,8 @@ class Game {
         
         this.board.placePiece(this.currentPiece, this.currentPiece.x, this.currentPiece.y);
         
-        const linesCleared = this.board.clearLines();
+        const clearResult = this.board.clearLines();
+        const linesCleared = clearResult.count;
         const isTSpin = pieceType === Piece.TYPES.T && RotationSystem.detectTSpin(this.currentPiece, this.board);
         
         if (linesCleared > 0) {

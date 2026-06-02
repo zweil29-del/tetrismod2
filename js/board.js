@@ -67,7 +67,7 @@ class Board {
             this.grid.unshift(Array(this.width).fill(0));
         }
 
-        return linesToClear.length;
+        return { count: linesToClear.length, lines: linesToClear };
     }
 
     getOccupiedCells(x, y) {
