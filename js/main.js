@@ -23,8 +23,8 @@ class GameApp {
     setupControls() {
         this.keys = {};
         this.lastMoveTime = {};
-        this.DAS_DELAY = 150;
-        this.DAS_REPEAT = 50;
+        this.DAS_DELAY = 120;
+        this.DAS_REPEAT = 40;
 
         window.addEventListener('keydown', (e) => {
             const key = e.key.toLowerCase();
@@ -64,7 +64,11 @@ class GameApp {
         });
 
         window.addEventListener('keyup', (e) => {
-            this.keys[e.key.toLowerCase()] = false;
+            const key = e.key.toLowerCase();
+            this.keys[key] = false;
+            if (key === 'arrowleft' || key === 'arrowright') {
+                this.lastMoveTime[key] = 0;
+            }
         });
     }
 

@@ -61,9 +61,13 @@ class Game {
         if (this.canMove(0, 1)) {
             this.currentPiece.y++;
             this.score += 1;
+            this.gravityCounter = 0;
             this.resetLockDelay();
         } else {
-            this.lockPiece();
+            this.lockDelay++;
+            if (this.lockDelay >= this.lockDelayMax) {
+                this.lockPiece();
+            }
         }
     }
 
@@ -181,7 +185,7 @@ class Game {
                     this.lockPiece();
                 }
             }
-            this.gravityCounter = 0;
+            this.gravityCounter -= 1;
         }
     }
 

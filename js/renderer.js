@@ -75,13 +75,16 @@ class Renderer {
         context.fillStyle = color;
         context.fillRect(px + 1, py + 1, this.cellSize - 2, this.cellSize - 2);
 
-        // Highlight
-        context.fillStyle = color.replace(/^#/, '#') + '88';
-        context.fillRect(px + 1, py + 1, this.cellSize - 2, 6);
+        context.fillStyle = color + '60';
+        context.fillRect(px + 1, py + 1, this.cellSize - 2, 8);
+        
+        context.strokeStyle = color + '40';
+        context.lineWidth = 1;
+        context.strokeRect(px + 1, py + 1, this.cellSize - 2, this.cellSize - 2);
     }
 
     drawPreview(piece) {
-        this.previewCtx.fillStyle = '#1a1a2e';
+        this.previewCtx.fillStyle = '#0f172a';
         this.previewCtx.fillRect(0, 0, this.previewCanvas.width, this.previewCanvas.height);
 
         const shape = piece.getShape();
@@ -103,15 +106,19 @@ class Renderer {
                     this.previewCtx.fillStyle = piece.color;
                     this.previewCtx.fillRect(px + 1, py + 1, cellSize - 2, cellSize - 2);
                     
-                    this.previewCtx.fillStyle = piece.color.replace(/^#/, '#') + '88';
+                    this.previewCtx.fillStyle = piece.color + '60';
                     this.previewCtx.fillRect(px + 1, py + 1, cellSize - 2, 4);
+                    
+                    this.previewCtx.strokeStyle = piece.color + '40';
+                    this.previewCtx.lineWidth = 0.5;
+                    this.previewCtx.strokeRect(px + 1, py + 1, cellSize - 2, cellSize - 2);
                 }
             }
         }
     }
 
     drawHold(piece) {
-        this.holdCtx.fillStyle = '#1a1a2e';
+        this.holdCtx.fillStyle = '#0f172a';
         this.holdCtx.fillRect(0, 0, this.holdCanvas.width, this.holdCanvas.height);
 
         if (!piece) return;
@@ -135,8 +142,12 @@ class Renderer {
                     this.holdCtx.fillStyle = piece.color;
                     this.holdCtx.fillRect(px + 1, py + 1, cellSize - 2, cellSize - 2);
                     
-                    this.holdCtx.fillStyle = piece.color.replace(/^#/, '#') + '88';
+                    this.holdCtx.fillStyle = piece.color + '60';
                     this.holdCtx.fillRect(px + 1, py + 1, cellSize - 2, 4);
+                    
+                    this.holdCtx.strokeStyle = piece.color + '40';
+                    this.holdCtx.lineWidth = 0.5;
+                    this.holdCtx.strokeRect(px + 1, py + 1, cellSize - 2, cellSize - 2);
                 }
             }
         }
@@ -171,14 +182,21 @@ class Renderer {
     drawGhostPieceAtY(piece, ghostY) {
         const shape = piece.getShape();
         
-        this.ctx.globalAlpha = 0.3;
+        this.ctx.globalAlpha = 0.25;
         for (let y = 0; y < shape.length; y++) {
             for (let x = 0; x < shape[y].length; x++) {
                 if (shape[y][x]) {
                     const boardX = piece.x + x;
                     const boardY = ghostY + y;
                     if (boardX >= 0 && boardX < 10 && boardY >= 0 && boardY < 20) {
-                        this.drawCell(boardX, boardY, piece.color, this.ctx);
+                        const px = boardX * this.cellSize;
+                        const py = boardY * this.cellSize;
+                        
+                        this.ctx.fillStyle = piece.color;
+                        this.ctx.fillRect(px + 1, py + 1, this.cellSize - 2, this.cellSize - 2);
+                        this.ctx.strokeStyle = piece.color;
+                        this.ctx.lineWidth = 1;
+                        this.ctx.strokeRect(px + 1, py + 1, this.cellSize - 2, this.cellSize - 2);
                     }
                 }
             }

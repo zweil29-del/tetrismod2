@@ -11,13 +11,13 @@ class Piece {
     };
 
     static COLORS = {
-        I: '#00f0f0',
-        O: '#f0f000',
-        T: '#a000f0',
-        S: '#00f000',
-        Z: '#f00000',
-        J: '#0000f0',
-        L: '#f0a000'
+        I: '#00e5ff',
+        O: '#ffd600',
+        T: '#d946ef',
+        S: '#10b981',
+        Z: '#ef4444',
+        J: '#3b82f6',
+        L: '#f97316'
     };
 
     static SHAPES = {
