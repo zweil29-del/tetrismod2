@@ -29,10 +29,11 @@ class Game {
         this.nextPiece = Piece.randomPiece();
         this.hasHeld = false;
 
-        // Center the piece at the top
+        // Center the piece at the top using bounding box
         const shape = this.currentPiece.getShape();
-        this.currentPiece.x = Math.floor((this.board.width - shape[0].length) / 2);
-        this.currentPiece.y = 0;
+        const bbox = Piece.getBoundingBox(shape);
+        this.currentPiece.x = Math.floor((this.board.width - bbox.width) / 2) - bbox.minX;
+        this.currentPiece.y = -bbox.minY;
 
         if (!this.board.canPlacePiece(this.currentPiece, this.currentPiece.x, this.currentPiece.y)) {
             this.gameOver = true;
@@ -96,10 +97,11 @@ class Game {
             this.currentPiece = this.holdPiece;
             this.holdPiece = temp;
 
-            // Reset position
+            // Reset position and rotation
             const shape = this.currentPiece.getShape();
-            this.currentPiece.x = Math.floor((this.board.width - shape[0].length) / 2);
-            this.currentPiece.y = 0;
+            const bbox = Piece.getBoundingBox(shape);
+            this.currentPiece.x = Math.floor((this.board.width - bbox.width) / 2) - bbox.minX;
+            this.currentPiece.y = -bbox.minY;
             this.currentPiece.resetRotation();
         }
 

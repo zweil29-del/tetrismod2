@@ -68,25 +68,6 @@ class Renderer {
         }
     }
 
-    drawGhostPiece(piece) {
-        const ghostY = this.getGhostY(piece);
-        const shape = piece.getShape();
-        
-        this.ctx.globalAlpha = 0.3;
-        for (let y = 0; y < shape.length; y++) {
-            for (let x = 0; x < shape[y].length; x++) {
-                if (shape[y][x]) {
-                    const boardX = piece.x + x;
-                    const boardY = ghostY + y;
-                    if (boardX >= 0 && boardX < 10 && boardY >= 0 && boardY < 20) {
-                        this.drawCell(boardX, boardY, piece.color, this.ctx);
-                    }
-                }
-            }
-        }
-        this.ctx.globalAlpha = 1.0;
-    }
-
     drawCell(x, y, color, context = this.ctx) {
         const px = x * this.cellSize;
         const py = y * this.cellSize;
@@ -175,7 +156,8 @@ class Renderer {
         this.drawBoard(board);
         
         if (currentPiece) {
-            this.drawGhostPiece(currentPiece, board);
+            const ghostY = this.getGhostY(currentPiece, board);
+            this.drawGhostPieceAtY(currentPiece, ghostY);
             this.drawPiece(currentPiece);
         }
 
@@ -183,10 +165,24 @@ class Renderer {
             this.drawPreview(nextPiece);
         }
 
-        if (holdPiece) {
-            this.drawHold(holdPiece);
-        } else {
-            this.drawHold(null);
+        this.drawHold(holdPiece);
+    }
+
+    drawGhostPieceAtY(piece, ghostY) {
+        const shape = piece.getShape();
+        
+        this.ctx.globalAlpha = 0.3;
+        for (let y = 0; y < shape.length; y++) {
+            for (let x = 0; x < shape[y].length; x++) {
+                if (shape[y][x]) {
+                    const boardX = piece.x + x;
+                    const boardY = ghostY + y;
+                    if (boardX >= 0 && boardX < 10 && boardY >= 0 && boardY < 20) {
+                        this.drawCell(boardX, boardY, piece.color, this.ctx);
+                    }
+                }
+            }
         }
+        this.ctx.globalAlpha = 1.0;
     }
 }
