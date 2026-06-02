@@ -22,6 +22,7 @@ class Game {
         this.lockDelay = 0;
         this.lockDelayMax = 30;
         this.lastMoveTime = 0;
+        this.backToBackClears = 0;
         
         this.spawnNewPiece();
     }
@@ -147,8 +148,19 @@ class Game {
         const baseScores = [0, 100, 300, 500, 800];
         let points = baseScores[Math.min(linesCleared, 4)] * this.level;
         
+        // T-spin bonus
         if (isTSpin) {
             points = Math.floor(points * 1.5);
+        }
+        
+        // Back-to-back bonus
+        if (linesCleared === 4 || isTSpin) {
+            this.backToBackClears++;
+            if (this.backToBackClears > 1) {
+                points = Math.floor(points * 1.1);
+            }
+        } else {
+            this.backToBackClears = 0;
         }
         
         this.score += points;
@@ -191,6 +203,7 @@ class Game {
         this.lines = 0;
         this.gameOver = false;
         this.paused = false;
+        this.backToBackClears = 0;
         
         this.gravity = 0.5;
         this.gravityCounter = 0;
