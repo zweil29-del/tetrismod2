@@ -22,9 +22,13 @@ class GameApp {
 
     setupControls() {
         this.keys = {};
+        this.lastMoveTime = {};
+        this.DAS_DELAY = 150;
+        this.DAS_REPEAT = 50;
 
         window.addEventListener('keydown', (e) => {
-            this.keys[e.key.toLowerCase()] = true;
+            const key = e.key.toLowerCase();
+            this.keys[key] = true;
 
             // Handle single-press controls
             if (e.key === ' ') {
@@ -32,27 +36,30 @@ class GameApp {
                 if (!this.game.gameOver && !this.game.paused) {
                     this.game.hardDrop();
                 }
-            } else if (e.key.toLowerCase() === 'p') {
+            } else if (key === 'p') {
                 e.preventDefault();
                 if (!this.game.gameOver) {
                     this.game.togglePause();
                     this.updatePauseUI();
                 }
-            } else if (e.key.toLowerCase() === 'c') {
+            } else if (key === 'c') {
                 e.preventDefault();
                 if (!this.game.gameOver && !this.game.paused) {
                     this.game.holdPieceAction();
                 }
-            } else if (e.key.toLowerCase() === 'z') {
+            } else if (key === 'z') {
                 e.preventDefault();
                 if (!this.game.gameOver && !this.game.paused) {
                     this.game.rotateLeft();
                 }
-            } else if (e.key.toLowerCase() === 'x' || e.key === 'ArrowUp') {
+            } else if (key === 'x' || e.key === 'ArrowUp') {
                 e.preventDefault();
                 if (!this.game.gameOver && !this.game.paused) {
                     this.game.rotateRight();
                 }
+            } else if (key === 'arrowleft' || key === 'arrowright') {
+                e.preventDefault();
+                this.lastMoveTime[key] = Date.now();
             }
         });
 
@@ -80,6 +87,7 @@ class GameApp {
         document.getElementById('score').textContent = this.game.score;
         document.getElementById('level').textContent = this.game.level;
         document.getElementById('lines').textContent = this.game.lines;
+        document.getElementById('highScore').textContent = this.game.highScore;
         
         if (this.game.gameOver) {
             document.getElementById('finalScore').textContent = this.game.score;
@@ -92,12 +100,34 @@ class GameApp {
     handleInput() {
         if (this.game.gameOver || this.game.paused) return;
 
+        const now = Date.now();
+
+        // Left movement with DAS
         if (this.keys['arrowleft']) {
-            this.game.moveLeft();
+            const lastTime = this.lastMoveTime['arrowleft'] || 0;
+            const timeSincePress = now - lastTime;
+            
+            if (lastTime === 0) {
+                this.game.moveLeft();
+                this.lastMoveTime['arrowleft'] = now;
+            } else if (timeSincePress > this.DAS_DELAY && (timeSincePress - this.DAS_DELAY) % this.DAS_REPEAT === 0) {
+                this.game.moveLeft();
+            }
         }
+
+        // Right movement with DAS
         if (this.keys['arrowright']) {
-            this.game.moveRight();
+            const lastTime = this.lastMoveTime['arrowright'] || 0;
+            const timeSincePress = now - lastTime;
+            
+            if (lastTime === 0) {
+                this.game.moveRight();
+                this.lastMoveTime['arrowright'] = now;
+            } else if (timeSincePress > this.DAS_DELAY && (timeSincePress - this.DAS_DELAY) % this.DAS_REPEAT === 0) {
+                this.game.moveRight();
+            }
         }
+
         if (this.keys['arrowdown']) {
             this.game.softDrop();
         }

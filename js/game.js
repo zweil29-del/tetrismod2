@@ -15,6 +15,8 @@ class Game {
         this.gameOver = false;
         this.paused = false;
         
+        this.highScore = parseInt(localStorage.getItem('tetrisHighScore')) || 0;
+        
         this.gravity = 0.5;
         this.gravityCounter = 0;
         this.lockDelay = 0;
@@ -121,23 +123,34 @@ class Game {
     }
 
     lockPiece() {
+        // Store piece for T-spin detection
+        const pieceType = this.currentPiece.type;
+        
         this.board.placePiece(this.currentPiece, this.currentPiece.x, this.currentPiece.y);
         
         const linesCleared = this.board.clearLines();
+        const isTSpin = pieceType === Piece.TYPES.T && RotationSystem.detectTSpin(this.currentPiece, this.board);
+        
         if (linesCleared > 0) {
-            this.addScore(linesCleared);
+            this.addScore(linesCleared, isTSpin);
             this.lines += linesCleared;
             
             this.level = Math.floor(this.lines / 10) + 1;
-            this.gravity = 0.5 + (this.level - 1) * 0.05;
+            this.gravity = Math.min(0.5 + (this.level - 1) * 0.05, 5.0);
         }
 
         this.spawnNewPiece();
     }
 
-    addScore(linesCleared) {
+    addScore(linesCleared, isTSpin = false) {
         const baseScores = [0, 100, 300, 500, 800];
-        this.score += baseScores[Math.min(linesCleared, 4)] * this.level;
+        let points = baseScores[Math.min(linesCleared, 4)] * this.level;
+        
+        if (isTSpin) {
+            points = Math.floor(points * 1.5);
+        }
+        
+        this.score += points;
     }
 
     update() {
@@ -160,6 +173,12 @@ class Game {
     }
 
     reset() {
+        // Save high score if current score is higher
+        if (this.score > this.highScore) {
+            this.highScore = this.score;
+            localStorage.setItem('tetrisHighScore', this.highScore);
+        }
+        
         this.board.reset();
         this.currentPiece = null;
         this.nextPiece = Piece.randomPiece();
